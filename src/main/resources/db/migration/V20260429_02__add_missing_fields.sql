@@ -1,0 +1,4 @@
+ALTER TABLE resumes ADD COLUMN education TEXT;
+ALTER TABLE resumes ADD COLUMN work_experience TEXT;
+ALTER TABLE resumes ADD COLUMN expected_salary NUMERIC(19, 2);
+ALTER TABLE resumes ADD COLUMN status VARCHAR(50) DEFAULT 'ACTIVE';
