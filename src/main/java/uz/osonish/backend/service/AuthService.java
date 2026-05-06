@@ -24,18 +24,27 @@ public class AuthService {
     private final CustomUserDetailsService userDetailsService;
 
     public AuthResponse register(AuthRequest request) {
-        var user = User.builder()
-                .phone(request.getPhone())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.ROLE_USER)
-                .build();
-        userRepository.save(user);
-        var userDetails = userDetailsService.loadUserByUsername(user.getPhone());
-        var jwtToken = jwtUtils.generateToken(userDetails);
-        return AuthResponse.builder()
-                .token(jwtToken)
-                .build();
+    // 1. Foydalanuvchi bazada bormi tekshiramiz
+    if (userRepository.existsByPhone(request.getPhone())) {
+        throw new RuntimeException("Bu telefon raqam allaqachon ro'yxatdan o'tgan!");
     }
+
+    // 2. Foydalanuvchi yaratamiz
+    var user = User.builder()
+            .phone(request.getPhone())
+            .password(passwordEncoder.encode(request.getPassword()))
+            .role(Role.ROLE_USER)
+            .build();
+    userRepository.save(user);
+
+    // 3. Token generatsiya
+    var userDetails = userDetailsService.loadUserByUsername(user.getPhone());
+    var jwtToken = jwtUtils.generateToken(userDetails);
+    
+    return AuthResponse.builder()
+            .token(jwtToken)
+            .build();
+}
 
     public AuthResponse login(AuthRequest request) {
         authenticationManager.authenticate(
