@@ -3,7 +3,9 @@ package uz.osonish.backend.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.osonish.backend.dto.ResumeRequestDTO;
@@ -21,9 +23,10 @@ public class ResumeController {
     private final ResumeService resumeService;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Create a new resume")
-    public ResponseEntity<ResumeResponseDTO> create(@RequestBody ResumeRequestDTO request) {
+    public ResponseEntity<ResumeResponseDTO> create(@Valid @RequestBody ResumeRequestDTO request) {
         return ResponseEntity.ok(resumeService.create(request));
     }
 
@@ -40,13 +43,16 @@ public class ResumeController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Update an existing resume")
-    public ResponseEntity<ResumeResponseDTO> update(@PathVariable Long id, @RequestBody ResumeRequestDTO request) {
+    public ResponseEntity<ResumeResponseDTO> update(@PathVariable Long id,
+            @Valid @RequestBody ResumeRequestDTO request) {
         return ResponseEntity.ok(resumeService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Delete a resume")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

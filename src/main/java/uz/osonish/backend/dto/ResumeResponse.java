@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uz.osonish.backend.enums.ResumeCategory;
 import uz.osonish.backend.enums.ResumeStatus;
 
 import java.math.BigDecimal;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 public class ResumeResponse {
     private Long id;
     private String title;
-    private String category;
+    private ResumeCategory category;
     private String experience;
     private String education;
     private String workExperience;

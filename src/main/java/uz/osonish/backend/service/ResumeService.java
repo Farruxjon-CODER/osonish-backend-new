@@ -8,6 +8,7 @@ import uz.osonish.backend.dto.ResumeRequestDTO;
 import uz.osonish.backend.dto.ResumeResponseDTO;
 import uz.osonish.backend.entity.Resume;
 import uz.osonish.backend.entity.User;
+import uz.osonish.backend.enums.ResumeCategory;
 import uz.osonish.backend.enums.ResumeStatus;
 import uz.osonish.backend.enums.Role;
 import uz.osonish.backend.repository.ResumeRepository;
@@ -27,10 +28,13 @@ public class ResumeService {
         User user = getCurrentUser();
 
         Resume resume = Resume.builder()
+                .fullName(request.getFullName())
                 .title(request.getTitle())
-                .category(request.getCategory())
-                .workExperience(request.getWorkExperience())
+                .summary(request.getSummary())
+                .skills(request.getSkills())
+                .experience(request.getExperience())
                 .education(request.getEducation())
+                .category(ResumeCategory.valueOf(request.getCategory().toUpperCase()))
                 .expectedSalary(request.getExpectedSalary())
                 .status(request.getStatus() != null ? request.getStatus() : ResumeStatus.OPEN)
                 .user(user)
@@ -61,8 +65,11 @@ public class ResumeService {
         }
 
         resume.setTitle(request.getTitle());
-        resume.setCategory(request.getCategory());
-        resume.setWorkExperience(request.getWorkExperience());
+        resume.setCategory(ResumeCategory.valueOf(request.getCategory().toUpperCase()));
+        resume.setFullName(request.getFullName());
+        resume.setSummary(request.getSummary());
+        resume.setSkills(request.getSkills());
+        resume.setExperience(request.getExperience());
         resume.setEducation(request.getEducation());
         resume.setExpectedSalary(request.getExpectedSalary());
         if (request.getStatus() != null) {
@@ -93,10 +100,13 @@ public class ResumeService {
     private ResumeResponseDTO mapToResponse(Resume resume) {
         return ResumeResponseDTO.builder()
                 .id(resume.getId())
+                .fullName(resume.getFullName())
                 .title(resume.getTitle())
-                .category(resume.getCategory())
-                .workExperience(resume.getWorkExperience())
+                .summary(resume.getSummary())
+                .skills(resume.getSkills())
+                .experience(resume.getExperience())
                 .education(resume.getEducation())
+                .category(resume.getCategory())
                 .expectedSalary(resume.getExpectedSalary())
                 .status(resume.getStatus())
                 .userId(resume.getUser().getId())

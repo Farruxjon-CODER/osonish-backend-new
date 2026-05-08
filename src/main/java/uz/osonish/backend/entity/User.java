@@ -11,7 +11,7 @@ import uz.osonish.backend.enums.Role;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "role", nullable = false, columnDefinition = "varchar(255) default 'ROLE_USER'")
     private Role role;
 }

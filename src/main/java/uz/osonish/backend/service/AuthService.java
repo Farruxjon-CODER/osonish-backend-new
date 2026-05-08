@@ -32,6 +32,7 @@ public class AuthService {
     // 2. Foydalanuvchi yaratamiz
     var user = User.builder()
             .phone(request.getPhone())
+            .fullName(request.getFullName())
             .password(passwordEncoder.encode(request.getPassword()))
             .role(Role.ROLE_USER)
             .build();
