@@ -8,8 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.osonish.backend.dto.ResumeRequestDTO;
+import uz.osonish.backend.dto.ResumeFullRequestDTO;
 import uz.osonish.backend.dto.ResumeResponseDTO;
+import uz.osonish.backend.enums.Region;
 import uz.osonish.backend.service.ResumeService;
 
 import java.util.List;
@@ -25,15 +26,15 @@ public class ResumeController {
     @PostMapping
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Create a new resume")
-    public ResponseEntity<ResumeResponseDTO> create(@Valid @RequestBody ResumeRequestDTO request) {
+    @Operation(summary = "Create a new resume (Full structure)")
+    public ResponseEntity<ResumeResponseDTO> create(@Valid @RequestBody ResumeFullRequestDTO request) {
         return ResponseEntity.ok(resumeService.create(request));
     }
 
     @GetMapping
-    @Operation(summary = "Get all resumes")
-    public ResponseEntity<List<ResumeResponseDTO>> getAll() {
-        return ResponseEntity.ok(resumeService.getAll());
+    @Operation(summary = "Get all resumes (optional filtering by region)")
+    public ResponseEntity<List<ResumeResponseDTO>> getAll(@RequestParam(required = false) Region region) {
+        return ResponseEntity.ok(resumeService.getAll(region));
     }
 
     @GetMapping("/{id}")
@@ -47,7 +48,7 @@ public class ResumeController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Update an existing resume")
     public ResponseEntity<ResumeResponseDTO> update(@PathVariable Long id,
-            @Valid @RequestBody ResumeRequestDTO request) {
+            @Valid @RequestBody ResumeFullRequestDTO request) {
         return ResponseEntity.ok(resumeService.update(id, request));
     }
 

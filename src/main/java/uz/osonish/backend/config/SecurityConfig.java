@@ -36,15 +36,19 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/**",
+                                "/api/public/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui/index.html",
                                 "/swagger-ui.html"
                         ).permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/resumes/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/resumes/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/resumes/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/resumes/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/resumes/**").hasAnyRole("CANDIDATE", "ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/resumes/**").hasAnyRole("CANDIDATE", "ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/resumes/**").hasAnyRole("CANDIDATE", "ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/vacancies/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/vacancies/**").hasAnyRole("EMPLOYER", "ADMIN")
+                        .requestMatchers("/api/employer/**").hasRole("EMPLOYER")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception

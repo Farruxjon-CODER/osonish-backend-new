@@ -43,13 +43,17 @@ public class JwtFilter extends OncePerRequestFilter {
         if (userPhone != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userPhone);
             if (jwtUtils.isTokenValid(jwt, userDetails)) {
+                // Extract authorities from token for "Authentication Conversion"
+                var authorities = jwtUtils.extractAuthorities(jwt);
+                
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
-                        userDetails.getAuthorities()
+                        authorities.isEmpty() ? userDetails.getAuthorities() : authorities
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                System.out.println("DEBUG: User " + userPhone + " authenticated with authorities: " + authToken.getAuthorities());
             }
         }
         filterChain.doFilter(request, response);

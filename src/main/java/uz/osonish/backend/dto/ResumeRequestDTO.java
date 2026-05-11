@@ -49,5 +49,8 @@ public class ResumeRequestDTO {
     @Schema(example = "3000")
     private BigDecimal expectedSalary;
 
+    @Schema(example = "TASHKENT_CITY")
+    private String region;
+
     private ResumeStatus status;
 }

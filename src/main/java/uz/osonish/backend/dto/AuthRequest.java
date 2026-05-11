@@ -22,4 +22,6 @@ public class AuthRequest {
 
     @NotBlank(message = "To'liq ism bo'sh bo'lmasligi kerak")
     private String fullName;
+
+    private uz.osonish.backend.enums.Role role;
 }
