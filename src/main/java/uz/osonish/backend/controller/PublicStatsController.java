@@ -8,19 +8,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uz.osonish.backend.dto.PublicStatsDTO;
-import uz.osonish.backend.service.PublicService;
+import uz.osonish.backend.service.PublicStatsService;
 
 @RestController
 @RequestMapping("/api/public")
 @RequiredArgsConstructor
-@Tag(name = "Public API", description = "Publicly accessible endpoints for platform statistics")
-public class PublicController {
+@Tag(name = "Public Stats", description = "Publicly accessible endpoints for platform statistics")
+public class PublicStatsController {
 
-    private final PublicService publicService;
+    private final PublicStatsService publicStatsService;
 
     @GetMapping("/stats")
-    @Operation(summary = "Get platform-wide statistics (Vacancies, Resumes, Companies)")
-    public ResponseEntity<PublicStatsDTO> getPublicStats() {
-        return ResponseEntity.ok(publicService.getPublicStats());
+    @Operation(summary = "Get platform-wide statistics (Vacancies, Resumes, Companies) - Cached")
+    public ResponseEntity<PublicStatsDTO> getStats() {
+        return ResponseEntity.ok(publicStatsService.getPublicStats());
     }
 }

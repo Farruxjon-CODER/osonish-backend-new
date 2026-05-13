@@ -13,11 +13,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.osonish.backend.dto.VacancyRequestDTO;
 import uz.osonish.backend.dto.VacancyResponseDTO;
+import uz.osonish.backend.dto.VacancySearchFilterDTO;
 import uz.osonish.backend.enums.*;
 import uz.osonish.backend.service.VacancyService;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/vacancies")
@@ -46,33 +44,11 @@ public class VacancyController {
     }
 
     @GetMapping("/search")
-    @Operation(summary = "Full filtration system with all 10+ parameters")
+    @Operation(summary = "Full filtration system with all 10+ parameters using ParameterObject")
     public ResponseEntity<Page<VacancyResponseDTO>> search(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Long regionId,
-            @RequestParam(required = false) Long districtId,
-            @RequestParam(required = false) BigDecimal minSalary,
-            @RequestParam(required = false) BigDecimal maxSalary,
-            @RequestParam(required = false) ExperienceLevel experienceLevel,
-            @RequestParam(required = false) EducationLevel educationLevel,
-            @RequestParam(required = false) List<EmploymentType> employmentType,
-            @RequestParam(required = false) List<WorkMode> workMode,
-            @RequestParam(required = false) Boolean forStudents,
-            @RequestParam(required = false) Boolean forGraduates,
-            @RequestParam(required = false) Boolean forDisabled,
-            @RequestParam(required = false) Boolean forOrphans,
-            @RequestParam(required = false) Gender gender,
-            @RequestParam(required = false) SocialCategory socialCategory,
-            @RequestParam(required = false) Integer minAge,
-            @RequestParam(required = false) Integer maxAge,
-            @RequestParam(required = false) String language,
-            @PageableDefault(size = 10) Pageable pageable
+            @Valid VacancySearchFilterDTO filter,
+            @PageableDefault(size = 10, sort = "createdAt") Pageable pageable
     ) {
-        return ResponseEntity.ok(vacancyService.search(
-                keyword, regionId, districtId, minSalary, maxSalary,
-                experienceLevel, educationLevel, employmentType, workMode,
-                forStudents, forGraduates, forDisabled, forOrphans, gender, socialCategory,
-                minAge, maxAge, language, pageable
-        ));
+        return ResponseEntity.ok(vacancyService.search(filter, pageable));
     }
 }

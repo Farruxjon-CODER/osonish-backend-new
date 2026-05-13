@@ -43,12 +43,12 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/resumes/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/resumes/**").hasAnyRole("CANDIDATE", "ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/resumes/**").hasAnyRole("CANDIDATE", "ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/resumes/**").hasAnyRole("CANDIDATE", "ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/resumes/**").hasAnyAuthority("ROLE_CANDIDATE", "ROLE_ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/resumes/**").hasAnyAuthority("ROLE_CANDIDATE", "ROLE_ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/resumes/**").hasAnyAuthority("ROLE_CANDIDATE", "ROLE_ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/vacancies/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/vacancies/**").hasAnyRole("EMPLOYER", "ADMIN")
-                        .requestMatchers("/api/employer/**").hasRole("EMPLOYER")
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/vacancies/**").hasAnyAuthority("ROLE_EMPLOYER", "ROLE_ADMIN")
+                        .requestMatchers("/api/employer/**").hasAuthority("ROLE_EMPLOYER")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception

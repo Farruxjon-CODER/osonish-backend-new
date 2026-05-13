@@ -28,9 +28,10 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        final String userPhone;
+        final String username;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -38,22 +39,22 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7);
-        userPhone = jwtUtils.extractUsername(jwt);
+        username = jwtUtils.extractUsername(jwt); // Sizda extractUsername metodi bor
 
-        if (userPhone != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userPhone);
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+            // JwtUtils dagi isTokenValid metodini chaqiramiz
             if (jwtUtils.isTokenValid(jwt, userDetails)) {
-                // Extract authorities from token for "Authentication Conversion"
-                var authorities = jwtUtils.extractAuthorities(jwt);
                 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
-                        authorities.isEmpty() ? userDetails.getAuthorities() : authorities
+                        jwtUtils.extractAuthorities(jwt) // Sizda bor bo'lgan extractAuthorities ishlatildi
                 );
+                
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                System.out.println("DEBUG: User " + userPhone + " authenticated with authorities: " + authToken.getAuthorities());
             }
         }
         filterChain.doFilter(request, response);

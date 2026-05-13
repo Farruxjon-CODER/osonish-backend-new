@@ -3,102 +3,82 @@ package uz.osonish.backend.repository;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import uz.osonish.backend.entity.Vacancy;
-import uz.osonish.backend.enums.*;
-
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import uz.osonish.backend.dto.VacancySearchFilterDTO;
+
 public class VacancySpecification {
 
-    public static Specification<Vacancy> filter(
-            String keyword,
-            Long regionId,
-            Long districtId,
-            BigDecimal minSalary,
-            BigDecimal maxSalary,
-            ExperienceLevel experienceLevel,
-            EducationLevel educationLevel,
-            List<EmploymentType> employmentTypes,
-            List<WorkMode> workModes,
-            Boolean forStudents,
-            Boolean forGraduates,
-            Boolean forDisabled,
-            Boolean forOrphans,
-            Gender gender,
-            SocialCategory socialCategory,
-            Integer minAge,
-            Integer maxAge,
-            String language
-    ) {
+    public static Specification<Vacancy> filter(VacancySearchFilterDTO filter) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (keyword != null && !keyword.isBlank()) {
-                String pattern = "%" + keyword.toLowerCase() + "%";
+            if (filter.getKeyword() != null && !filter.getKeyword().isBlank()) {
+                String pattern = "%" + filter.getKeyword().toLowerCase() + "%";
                 Predicate titlePredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), pattern);
                 Predicate descPredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), pattern);
                 predicates.add(criteriaBuilder.or(titlePredicate, descPredicate));
             }
 
-            if (regionId != null) {
-                predicates.add(criteriaBuilder.equal(root.get("regionId"), regionId));
+            if (filter.getRegionId() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("regionId"), filter.getRegionId()));
             }
-            if (districtId != null) {
-                predicates.add(criteriaBuilder.equal(root.get("districtId"), districtId));
-            }
-
-            // Salary Overlap Logic
-            if (minSalary != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("maxSalary"), minSalary));
-            }
-            if (maxSalary != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("minSalary"), maxSalary));
+            if (filter.getDistrictId() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("districtId"), filter.getDistrictId()));
             }
 
-            if (experienceLevel != null) {
-                predicates.add(criteriaBuilder.equal(root.get("experienceLevel"), experienceLevel));
+            // Salary Overlap Logic: Vacancy max >= User min AND Vacancy min <= User max
+            if (filter.getMinSalary() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("maxSalary"), filter.getMinSalary()));
             }
-            if (educationLevel != null) {
-                predicates.add(criteriaBuilder.equal(root.get("educationLevel"), educationLevel));
+            if (filter.getMaxSalary() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("minSalary"), filter.getMaxSalary()));
+            }
+
+            if (filter.getExperienceLevel() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("experienceLevel"), filter.getExperienceLevel()));
+            }
+            if (filter.getEducationLevel() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("educationLevel"), filter.getEducationLevel()));
             }
 
             // Multi-select logic
-            if (employmentTypes != null && !employmentTypes.isEmpty()) {
-                predicates.add(root.get("employmentType").in(employmentTypes));
+            if (filter.getEmploymentType() != null && !filter.getEmploymentType().isEmpty()) {
+                predicates.add(root.get("employmentType").in(filter.getEmploymentType()));
             }
-            if (workModes != null && !workModes.isEmpty()) {
-                predicates.add(root.get("workMode").in(workModes));
-            }
-
-            if (forStudents != null) {
-                predicates.add(criteriaBuilder.equal(root.get("forStudents"), forStudents));
-            }
-            if (forGraduates != null) {
-                predicates.add(criteriaBuilder.equal(root.get("forGraduates"), forGraduates));
-            }
-            if (forDisabled != null) {
-                predicates.add(criteriaBuilder.equal(root.get("forDisabled"), forDisabled));
-            }
-            if (forOrphans != null) {
-                predicates.add(criteriaBuilder.equal(root.get("forOrphans"), forOrphans));
+            if (filter.getWorkMode() != null && !filter.getWorkMode().isEmpty()) {
+                predicates.add(root.get("workMode").in(filter.getWorkMode()));
             }
 
-            if (gender != null) {
-                predicates.add(criteriaBuilder.equal(root.get("gender"), gender));
+            if (filter.getForStudents() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("forStudents"), filter.getForStudents()));
             }
-            if (socialCategory != null) {
-                predicates.add(criteriaBuilder.equal(root.get("socialCategory"), socialCategory));
+            if (filter.getForGraduates() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("forGraduates"), filter.getForGraduates()));
+            }
+            if (filter.getForDisabled() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("forDisabled"), filter.getForDisabled()));
+            }
+            if (filter.getForOrphans() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("forOrphans"), filter.getForOrphans()));
             }
 
-            if (minAge != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("minAge"), minAge));
+            if (filter.getGender() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("gender"), filter.getGender()));
             }
-            if (maxAge != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("maxAge"), maxAge));
+            if (filter.getSocialCategory() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("socialCategory"), filter.getSocialCategory()));
             }
-            if (language != null && !language.isBlank()) {
-                predicates.add(criteriaBuilder.equal(root.get("language"), language));
+
+            if (filter.getMinAge() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("minAge"), filter.getMinAge()));
+            }
+            if (filter.getMaxAge() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("maxAge"), filter.getMaxAge()));
+            }
+            if (filter.getLanguage() != null && !filter.getLanguage().isBlank()) {
+                predicates.add(criteriaBuilder.equal(root.get("language"), filter.getLanguage()));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
